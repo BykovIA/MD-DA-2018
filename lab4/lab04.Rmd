@@ -1,0 +1,103 @@
+---
+title: "lab4"
+author: "Быков Игнорь"
+date: '15 декабря 2018 г '
+output: html_document
+---
+
+
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+
+
+```
+data <- read.csv("https://archive.ics.uci.edu/ml/machine-learning-databases/abalone/abalone.data", header=TRUE, sep=",")
+summary(data)
+colnames(data)
+colnames(data) <- c("sex", "length", "diameter", "height", 
+                "whole_weight", "shucked_weight",
+                "viscera_weight", "shell_weight", "rings")
+
+colnames(data)
+data$sex <- factor(c("Female", "Infant", "Male")[data$sex])
+par(mfrow=c(1,3)) 
+hist(data$diameter, main = "Диаметр, мм")
+hist(data$height, main = "Высота, мм")
+hist(data$whole_weight, main = "Полный вес, гр")
+#Видим ассиметрию https://en.wikipedia.org/wiki/Skewness
+#и выбросы (от них нужно избавиться)
+
+#Визулизируем возможные зависимости
+par(mfrow=c(1,2)) 
+plot(data$diameter, data$whole_weight,'p',main = "Зависимость веса от диаметра")
+plot(data$height, data$whole_weight,'p',main = "Зависимость веса от высоты")
+
+#Линейные модели с выбросами
+devAskNewPage(ask = FALSE)
+linear.model.1 <- lm(data$diameter ~ data$whole_weight)
+summary(linear.model.1)
+plot(linear.model.1)
+devAskNewPage(ask = FALSE)
+linear.model.2 <- lm(data$height ~ data$whole_weight)
+summary(linear.model.2)
+plot(linear.model.2)
+linear.model.3 <- lm(data$whole_weight ~ .,data=data)
+summary(linear.model.3)
+plot(linear.model.3)
+
+#минус выбросы
+data.raw <- data
+data <- data %>% filter(height > 0.08 & height < 0.18) %>% filter(diameter >= 0.26 & diameter < 0.52) %>% filter(whole_weight > 0.20 & whole_weight < 1.4)
+
+#новые линейные модели
+devAskNewPage(ask = FALSE)
+linear.model.1.new <- lm(data$diameter ~ data$whole_weight)
+summary(linear.model.1.new)
+plot(linear.model.1.new)
+devAskNewPage(ask = FALSE)
+linear.model.2.new <- lm(data$height ~ data$whole_weight)
+summary(linear.model.2.new)
+plot(linear.model.2.new)
+linear.model.3.new <- lm(data$whole_weight ~ .,data=data)
+summary(linear.model.3.new)
+plot(linear.model.3.new)
+
+#Делим массив на 2 случайные части
+odds <- seq(1, nrow(data), by=2)
+oddrow <- data[odds,]
+evenrow <- data[-odds,]
+
+#По диаметру - 0.7035
+oddmodel1 <- lm(oddrow$diameter ~ oddrow$whole_weight)
+summary(oddmodel1)
+predict1 <- predict(oddmodel1)
+cor(oddrow$whole_weight, predict1)
+plot(oddrow$whole_weight, predict1)
+totalpredict1 <- predict(oddmodel1, evenrow)
+cor(evenrow$whole_weight, totalpredict1)
+plot(evenrow$whole_weight, totalpredict1)
+
+#По высоте - 0.75
+oddmodel2 <- lm(oddrow$height ~ oddrow$whole_weight)
+summary(oddmodel2)
+predict2 <- predict(oddmodel2)
+cor(oddrow$whole_weight, predict2)
+plot(oddrow$whole_weight, predict2)
+totalpredict2 <- predict(oddmodel2, evenrow)
+cor(evenrow$whole_weight, totalpredict2)
+plot(evenrow$whole_weight, totalpredict2)
+
+#По всем данным -0.99554
+oddmodel3 <- lm(oddrow$whole_weight ~ .,data=oddrow)
+summary(oddmodel3)
+predict3 <- predict(oddmodel3)
+cor(oddrow$whole_weight, predict3)
+plot(oddrow$whole_weight, predict3)
+totalpredict3 <- predict(oddmodel3, evenrow)
+cor(evenrow$whole_weight, totalpredict3)
+plot(evenrow$whole_weight, totalpredict3)
+
+
+
+
+
