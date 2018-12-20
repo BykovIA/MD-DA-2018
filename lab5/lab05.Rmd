@@ -74,3 +74,27 @@ par(mar=c(5,4,6,2))
 tuk <- glht(fit, linfct=mcp(diet.type="Tukey"))
 plot(cld(tuk, level=.05),col="lightgrey")
 
+# Задания с листочка
+data <- data %>% filter(!is.na(gender))
+data$gender <- factor( c('Female', 'Male')[as.ordered(data$gender)] )
+summary(data)
+# Проверим, сбалансированы ли данные
+table(data$gender)
+# Проанализируем, есть ли различия
+boxplot(weight.loss~gender,data=data,col="light gray",
+        ylab = "Weight loss (kg)", xlab = "Diet type")
+abline(h=0,col="green")
+# График групповых средних
+plotmeans(weight.loss ~ gender, data=data)
+aggregate(data$weight.loss, by = list(data$gender), FUN=sd)
+# Для подгонки ANOVA модели используем функцию aov, частный случай линейной модели lm тест на межгрупповые различия
+fit <- aov(weight.loss ~ gender, data=data)
+summary(fit)
+# Попарные различия между средними значениями для всех групп
+THSD <- TukeyHSD(fit)
+THSD
+# Tukey honest significant differences test)
+par(mar=c(5,4,6,2))
+tuk <- glht(fit, linfct=mcp(gender="Tukey"))
+plot(cld(tuk, level=.05),col="lightgrey")
+
