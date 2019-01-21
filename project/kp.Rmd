@@ -1,0 +1,117 @@
+---
+title: "kypsa4"
+author: "Быков Игнорь"
+date: '16 января 2019 г '
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+data <- read.csv("C:\\mdda/nj_teachers_salaries_2016.csv", header=TRUE, sep=",")
+summary(data)
+colnames(data)
+```
+
+Фильтруем данные
+```{r}
+data<-na.omit(data)
+data<-data[data$salary<=125000&data$salary>45000,]
+summary(data)
+```
+
+Добавим классификацию зарплат по уровню от 1 до 5
+```{r}
+hist(data$salary, main = "З/П в год")
+data$salary_type[data$salary >= 91000] <- 'e'
+data$salary_type[data$salary >= 77000 &
+ data$salary < 91000] <- 'd'
+data$salary_type[data$salary >= 63500 &
+ data$salary < 77000] <- 'c'
+data$salary_type[data$salary >= 55500 &
+ data$salary < 63500] <- 'b'
+data$salary_type[data$salary < 55500] <- 'a'
+
+data01 <-data[data$salary_type == 'a',]
+data02 <-data[data$salary_type == 'b',]
+data03 <-data[data$salary_type == 'c',]
+data04 <-data[data$salary_type == 'g',]
+data05 <-data[data$salary_type == 'f',]
+
+summary(data)
+boxplot(data$salary~data$salary_type,data=data,col="light gray",
+        ylab = "З/П", xlab = "класс по З/П")
+```
+
+Посмотрим на интересующие нас зависимости
+```{r}
+par(mfrow=c(1,2)) 
+plot(data$salary, data$fte,'p',main = "Зависимость з/п от времени")
+plot(data$salary, data$experience_total,'p',main = "Зависимость з/п от стажа")
+plot(data$salary, data$experience_district,'p',main = "Зависимость з/п от стажа в конкретном месте")
+plot(data$salary, data$experience_nj,'p',main = "Зависимость з/п от стажа NJ")
+plot(data$salary, data$county,'p',main = "Зависимость з/п от региона")
+plot(data$salary, data$teaching_route,'p',main = "Зависимость з/п от пути учителя")
+plot(data$salary, data$certificate,'p',main = "Зависимость з/п от сертификата")
+plot(data$salary, data$highly_qualified,'p',main = "Зависимость з/п от высшей категории")
+```
+Попробуем линейную модель
+```{r}
+odds1 <- seq(1, nrow(data), by=2)
+data1.in <- data[odds1,]
+data1.out <- data[-odds1,]
+lmh2 <- lm (salary ~ experience_district + experience_nj +  experience_total + county + subcategory  + highly_qualified  + fte  , data = data1.in)
+summary(lmh2)
+mypredict <- predict(lmh2)
+cor(data1.in$salary, mypredict)
+plot(data1.in$salary, mypredict)
+mypredict2 <- predict(lmh2, data1.out)
+cor(data1.out$salary, mypredict2)
+plot(data1.out$salary, mypredict2)
+
+
+
+lmh3 <- lm (salary ~  +  experience_total + county  + fte  , data = data1.in)
+summary(lmh3)
+mypredict <- predict(lmh3)
+cor(data1.in$salary, mypredict)
+plot(data1.in$salary, mypredict)
+mypredict2 <- predict(lmh3, data1.out)
+cor(data1.out$salary, mypredict2)
+plot(data1.out$salary, mypredict2)
+```
+
+Итоговая линейная модель
+```{r}
+#install.packages('caret', dependencies = TRUE)
+library(caret)
+newIndex <- createDataPartition(data$salary, p=0.05, list=FALSE)
+test_data <- data[-newIndex,]
+learn_data <- data[newIndex,]
+summary(test_data)
+lmh1 <- lm (salary ~ experience_total + county + subcategory  + highly_qualified + district + fte  , data = learn_data)
+summary(lmh1)
+mypredict <- predict(lmh1)
+cor(learn_data$salary, mypredict)
+plot(learn_data$salary, mypredict)
+mypredict2 <- predict(lmh1, test_data)
+cor(test_data$salary, mypredict2)
+plot(test_data$salary, mypredict2)
+```
+
+Машинное обучение для задач классификации
+```{r}
+control <- trainControl(method = "cv", number = 10)
+set.seed(13)
+fit.cart <-train(salary_type ~ experience_total + county + subcategory  + highly_qualified  + fte, data = test_data, method = "rpart", metric = "Accuracy", trControl=control)
+set.seed(13)
+fit.svm <-train(salary_type ~ experience_total + county + subcategory  + highly_qualified  + fte, data = test_data, method = "svmRadial", metric = "Accuracy", trControl=control)
+set.seed(13)
+fit.rf <-train(salary_type ~ experience_total + county + subcategory  + highly_qualified  + fte, data = test_data, method = "rf", metric = "Accuracy", trControl=control)
+results <- resamples(list(cart = fit.cart, svm=fit.svm, rf=fit.rf))
+summary(results)
+```
+
+
