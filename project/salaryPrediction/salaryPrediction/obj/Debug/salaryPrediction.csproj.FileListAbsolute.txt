@@ -1,0 +1,15 @@
+C:\Users\igorb\Desktop\mddaProject\salaryPrediction\salaryPrediction\bin\Debug\salaryPrediction.exe.config
+C:\Users\igorb\Desktop\mddaProject\salaryPrediction\salaryPrediction\bin\Debug\salaryPrediction.exe
+C:\Users\igorb\Desktop\mddaProject\salaryPrediction\salaryPrediction\bin\Debug\salaryPrediction.pdb
+C:\Users\igorb\Desktop\mddaProject\salaryPrediction\salaryPrediction\bin\Debug\DynamicInterop.dll
+C:\Users\igorb\Desktop\mddaProject\salaryPrediction\salaryPrediction\bin\Debug\RDotNet.dll
+C:\Users\igorb\Desktop\mddaProject\salaryPrediction\salaryPrediction\bin\Debug\RDotNet.NativeLibrary.dll
+C:\Users\igorb\Desktop\mddaProject\salaryPrediction\salaryPrediction\bin\Debug\DynamicInterop.xml
+C:\Users\igorb\Desktop\mddaProject\salaryPrediction\salaryPrediction\bin\Debug\RDotNet.xml
+C:\Users\igorb\Desktop\mddaProject\salaryPrediction\salaryPrediction\bin\Debug\RDotNet.NativeLibrary.xml
+C:\Users\igorb\Desktop\mddaProject\salaryPrediction\salaryPrediction\obj\Debug\salaryPrediction.csprojResolveAssemblyReference.cache
+C:\Users\igorb\Desktop\mddaProject\salaryPrediction\salaryPrediction\obj\Debug\salaryPrediction.Form1.resources
+C:\Users\igorb\Desktop\mddaProject\salaryPrediction\salaryPrediction\obj\Debug\salaryPrediction.Properties.Resources.resources
+C:\Users\igorb\Desktop\mddaProject\salaryPrediction\salaryPrediction\obj\Debug\salaryPrediction.csproj.GenerateResource.Cache
+C:\Users\igorb\Desktop\mddaProject\salaryPrediction\salaryPrediction\obj\Debug\salaryPrediction.exe
+C:\Users\igorb\Desktop\mddaProject\salaryPrediction\salaryPrediction\obj\Debug\salaryPrediction.pdb
